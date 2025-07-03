@@ -1,13 +1,13 @@
 #Step-1: Installing Git, Java-1.8.0, Maven
-yum install git java-1.8.0 maven -y
+sudo yum stall git java-1.8.0 maven -y
 
 #Step-2: Gettin Repo (jenkins.io --> download --> redhat)
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
 sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io-2023.key
 
 #Step-3: Download Java (the version that supported by Jenkins)
-yum install java-17-amazon-corretto -y
-yum install jenkins -y
+sudo yum install java-17-amazon-corretto -y
+sudo yum install jenkins -y
 update-alternatives --config java
 
 #Step-4: Restarting Jenkins (when we download any service it will be on stop state)
