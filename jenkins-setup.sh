@@ -1,5 +1,5 @@
 #Step-1: Installing Git, Java-1.8.0, Maven
-sudo yum stall git java-1.8.0 maven -y
+sudo yum install git java-1.8.0 maven -y
 
 #Step-2: Gettin Repo (jenkins.io --> download --> redhat)
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
