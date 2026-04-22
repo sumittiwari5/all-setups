@@ -1,0 +1,107 @@
+#!/bin/bash
+
+set -e  # Exit on error
+
+echo "🚀 Starting server setup..."
+
+# -------------------------------
+# Utility function
+# -------------------------------
+install_if_missing() {
+    TOOL_NAME=$1
+    CHECK_CMD=$2
+    INSTALL_CMD=$3
+
+    if command -v $CHECK_CMD &> /dev/null
+    then
+        echo "✅ $TOOL_NAME is already installed"
+    else
+        echo "⬇️ Installing $TOOL_NAME..."
+        eval $INSTALL_CMD
+        echo "✅ $TOOL_NAME installed successfully"
+    fi
+}
+
+# -------------------------------
+# Update system
+# -------------------------------
+echo "🔄 Updating system..."
+sudo apt update -y
+
+# -------------------------------
+# Install Git
+# -------------------------------
+install_if_missing "Git" "git" "sudo apt install -y git"
+
+# -------------------------------
+# Install Docker
+# -------------------------------
+if ! command -v docker &> /dev/null
+then
+    echo "⬇️ Installing Docker..."
+
+    sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+    sudo add-apt-repository \
+      \"deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable\"
+
+    sudo apt update -y
+    sudo apt install -y docker-ce
+
+    sudo systemctl start docker
+    sudo systemctl enable docker
+
+    sudo usermod -aG docker $USER
+
+    echo "✅ Docker installed"
+else
+    echo "✅ Docker already installed"
+fi
+
+# -------------------------------
+# Install Nginx
+# -------------------------------
+install_if_missing "Nginx" "nginx" "sudo apt install -y nginx"
+
+# -------------------------------
+# Install Java (for Jenkins)
+# -------------------------------
+install_if_missing "Java" "java" "sudo apt install -y openjdk-17-jdk"
+
+# -------------------------------
+# Install Jenkins
+# -------------------------------
+if ! command -v jenkins &> /dev/null
+then
+    echo "⬇️ Installing Jenkins..."
+
+    curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo tee \
+      /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+    echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+      https://pkg.jenkins.io/debian binary/ | sudo tee \
+      /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+    sudo apt update -y
+    sudo apt install -y jenkins
+
+    sudo systemctl start jenkins
+    sudo systemctl enable jenkins
+
+    echo "✅ Jenkins installed"
+else
+    echo "✅ Jenkins already installed"
+fi
+
+# -------------------------------
+# Install Node.js (optional)
+# -------------------------------
+install_if_missing "Node.js" "node" "sudo apt install -y nodejs npm"
+
+# -------------------------------
+# Final message
+# -------------------------------
+echo "🎉 Setup complete!"
+echo "⚠️ Please logout and login again if Docker was just installed (for permissions)"
